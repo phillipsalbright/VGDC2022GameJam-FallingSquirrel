@@ -21,6 +21,11 @@ public class PlayerMovement : MonoBehaviour
     private float currentSpeed;
     private float gravity;
     private SpriteRenderer s;
+    private bool grounded = false;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask whatIsGround;
+    private bool jumpPressed;
+    private int playerNum;
     
 
     private void Awake()
@@ -75,11 +80,23 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void OnJump(InputAction.CallbackContext ctx)
+    {
+        if (ctx.action.triggered)
+        {
+            jumpPressed = true;
+        }
+    }
+
     private IEnumerator ChangeState(PlayerState state)
     {
+        if (grounded)
+        {
+            state = PlayerState.normal;
+        }
         //set animator stuff
-        yield return new WaitForSeconds(.5f);
         currentState = state;
+        yield return new WaitForSeconds(.5f);
         switch (state)
         {
             case PlayerState.diving:
@@ -108,5 +125,44 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = Vector2.SmoothDamp(rb.velocity, targetVelocity, ref velocityRef, smoothDamp);
         Vector2 targetGravityVel = new Vector2(rb.velocity.x, gravity);
         rb.velocity = Vector2.SmoothDamp(rb.velocity, targetGravityVel, ref velocityRef, .1f);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheck.position, .15f, whatIsGround);
+        bool isGrounded = false;
+        Debug.Log(colliders.Length);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].gameObject != this.gameObject)
+            {
+                if (!grounded)
+                {
+                    if (cr != null)
+                    {
+                        StopCoroutine(cr);
+                    }
+                    cr = StartCoroutine(ChangeState(PlayerState.normal));
+
+                }
+                isGrounded = true;
+                break;
+            }
+        }
+        grounded = isGrounded;
+        if (jumpPressed && grounded)
+        {
+            jumpPressed = false;
+            rb.velocity = new Vector2(rb.velocity.x, 18);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.layer == 6)
+        {
+            FindObjectOfType<GameManager>().CupCollected(playerNum);
+        }
+    }
+
+    public void SetPlayerNum(int playerNum)
+    {
+        this.playerNum = playerNum;
     }
 }
