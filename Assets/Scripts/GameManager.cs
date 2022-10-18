@@ -20,9 +20,16 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        pm = this.GetComponent<PlayerInputManager>();
         joiningText.text = "Press a button on player 1's device";
+        StartCoroutine(DelayedStart());
+    }
+
+    IEnumerator DelayedStart()
+    {
+        yield return new WaitForSeconds(.5f);
         Time.timeScale = 0;
+        pm = this.GetComponent<PlayerInputManager>();
+        pm.EnableJoining();
     }
     public void OnPlayerJoined(PlayerInput player)
     {
