@@ -8,13 +8,13 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - ground
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - cup
+  - Player
+  - Sap
+  - Spikes
   - 
   - 
   - 
