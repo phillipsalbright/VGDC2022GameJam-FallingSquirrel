@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float divingMoveSpeed = 2f;
     private float currentSpeed;
     private float gravity;
+    private Animator anim;
     private SpriteRenderer s;
     private bool grounded = false;
     [SerializeField] private Transform groundCheck;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
         rb = this.GetComponent<Rigidbody2D>();
         gravity = normalGravityMultiplier;
         currentSpeed = normalMoveSpeed;
+        anim = this.GetComponentInParent<Animator>();
         s = this.GetComponent<SpriteRenderer>();
     }
 
@@ -101,24 +103,23 @@ public class PlayerMovement : MonoBehaviour
         }
         //set animator stuff
         currentState = state;
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         switch (state)
         {
             case PlayerState.diving:
                 gravity = divingGravityMultiplier;
                 currentSpeed = divingMoveSpeed;
-                s.color = new Color(1, 0, 0);
+                anim.SetInteger("PlayerState", 2);
                 break;
             case PlayerState.gliding:
                 gravity = glidingGravityMultiplier;
                 currentSpeed = glidingMoveSpeed;
-                s.color = new Color(0, 0, 1);
+                anim.SetInteger("PlayerState", 0);
                 break;
             case PlayerState.normal:
                 gravity = normalGravityMultiplier;
                 currentSpeed = normalMoveSpeed;
-                s.color = new Color(1, 1, 1);
-
+                anim.SetInteger("PlayerState", 1);
                 break;
         }
         Debug.Log(state);
@@ -166,6 +167,13 @@ public class PlayerMovement : MonoBehaviour
         } else if (jumpPressed)
         {
             jumpPressed = false;
+        }
+        if (rb.velocity.x > 0)
+        {
+            anim.SetBool("FacingRight", true);
+        } else if (rb.velocity.x < 0)
+        {
+            anim.SetBool("FacingRight", false);
         }
     }
 
