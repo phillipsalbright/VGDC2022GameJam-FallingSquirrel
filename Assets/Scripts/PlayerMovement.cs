@@ -166,10 +166,10 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpPressed = false;
         }
-        if (rb.velocity.x > 0)
+        if (rb.velocity.x > 0.01)
         {
             anim.SetBool("FacingRight", true);
-        } else if (rb.velocity.x < 0)
+        } else if (rb.velocity.x < -0.01)
         {
             anim.SetBool("FacingRight", false);
         }
@@ -188,6 +188,7 @@ public class PlayerMovement : MonoBehaviour
             case 9:
                 timeStunned = 0;
                 rb.velocity = new Vector2(rb.velocity.x, 130);
+                anim.SetBool("Injured", true);
                 stunned = true;
                 if (flashingAnim == null)
                 {
@@ -231,5 +232,6 @@ public class PlayerMovement : MonoBehaviour
         }
         s.color = c1;
         stunned = false;
+        anim.SetBool("Injured", false);
     }
 }
