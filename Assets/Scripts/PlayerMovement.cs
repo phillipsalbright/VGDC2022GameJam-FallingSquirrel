@@ -50,7 +50,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnGlide(InputAction.CallbackContext ctx)
     {
-        Debug.Log(ctx.action.triggered);
         if (ctx.action.triggered)
         {
             if (cr != null)
@@ -122,7 +121,6 @@ public class PlayerMovement : MonoBehaviour
                 anim.SetInteger("PlayerState", 1);
                 break;
         }
-        Debug.Log(state);
     }
 
     private void FixedUpdate()
@@ -196,6 +194,11 @@ public class PlayerMovement : MonoBehaviour
                     flashingAnim = StartCoroutine(FlashingAnim());
                 }
                 ChangeState(PlayerState.normal);
+                break;
+            case 10:
+                GameManager g = FindObjectOfType<GameManager>();
+                g.SpawnObstacle(this.playerNum);
+                Destroy(collision.gameObject);
                 break;
         }
     }
