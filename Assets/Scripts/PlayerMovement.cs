@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float divingMoveSpeed = 2f;
     private float currentSpeed;
     private float gravity;
+    private Animator anim;
     private SpriteRenderer s;
     private bool grounded = false;
     [SerializeField] private Transform groundCheck;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
         rb = this.GetComponent<Rigidbody2D>();
         gravity = normalGravityMultiplier;
         currentSpeed = normalMoveSpeed;
+        anim = this.GetComponentInParent<Animator>();
         s = this.GetComponent<SpriteRenderer>();
     }
 
@@ -48,7 +50,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnGlide(InputAction.CallbackContext ctx)
     {
-        Debug.Log(ctx.action.triggered);
         if (ctx.action.triggered)
         {
             if (cr != null)
@@ -101,27 +102,25 @@ public class PlayerMovement : MonoBehaviour
         }
         //set animator stuff
         currentState = state;
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         switch (state)
         {
             case PlayerState.diving:
                 gravity = divingGravityMultiplier;
                 currentSpeed = divingMoveSpeed;
-                s.color = new Color(1, 0, 0);
+                anim.SetInteger("PlayerState", 2);
                 break;
             case PlayerState.gliding:
                 gravity = glidingGravityMultiplier;
                 currentSpeed = glidingMoveSpeed;
-                s.color = new Color(0, 0, 1);
+                anim.SetInteger("PlayerState", 0);
                 break;
             case PlayerState.normal:
                 gravity = normalGravityMultiplier;
                 currentSpeed = normalMoveSpeed;
-                s.color = new Color(1, 1, 1);
-
+                anim.SetInteger("PlayerState", 1);
                 break;
         }
-        Debug.Log(state);
     }
 
     private void FixedUpdate()
@@ -167,6 +166,13 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpPressed = false;
         }
+        if (rb.velocity.x > 0.01)
+        {
+            anim.SetBool("FacingRight", true);
+        } else if (rb.velocity.x < -0.01)
+        {
+            anim.SetBool("FacingRight", false);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -182,12 +188,18 @@ public class PlayerMovement : MonoBehaviour
             case 9:
                 timeStunned = 0;
                 rb.velocity = new Vector2(rb.velocity.x, 130);
+                anim.SetBool("Injured", true);
                 stunned = true;
                 if (flashingAnim == null)
                 {
                     flashingAnim = StartCoroutine(FlashingAnim());
                 }
                 ChangeState(PlayerState.normal);
+                break;
+            case 10:
+                GameManager g = FindObjectOfType<GameManager>();
+                g.SpawnObstacle(this.playerNum);
+                Destroy(collision.gameObject);
                 break;
         }
     }
@@ -220,5 +232,6 @@ public class PlayerMovement : MonoBehaviour
         }
         s.color = c1;
         stunned = false;
+        anim.SetBool("Injured", false);
     }
 }
