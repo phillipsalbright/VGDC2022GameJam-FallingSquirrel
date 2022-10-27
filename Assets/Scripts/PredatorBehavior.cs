@@ -14,6 +14,10 @@ public class PredatorBehavior : MonoBehaviour
 
     private bool squirrelFound = false;
 
+    [SerializeField] private float snakescaling = 1.2f;
+
+    [SerializeField] private float snakepositioning = 0.3f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,7 +56,7 @@ public class PredatorBehavior : MonoBehaviour
 
     private void checkForSquirrel()
     {
-        if (transform.position.y >= player.transform.position.y)
+        if (transform.position.y >= player.transform.position.y && !squirrelFound)
         {
             squirrelFound = true;
             Debug.Log("Detected squirrel");
@@ -62,10 +66,25 @@ public class PredatorBehavior : MonoBehaviour
                     velocity += new Vector2(speed, -speed);
                     break;
                 case "Snake":
-                    velocity += new Vector2(speed, 0);
+                    rb.mass *= 5;
+                    rb.drag *= 5;
+                    //transform.localScale = new Vector3(transform.localScale.x * 5, transform.localScale.y, transform.localScale.z);
+                    StartCoroutine(ScaleSnake());
+                    //transform.position = new Vector3(transform.position.x - 2f, transform.position.y, transform.position.z);
                     break;
             }
 
         }
+    }
+
+    IEnumerator ScaleSnake()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            transform.localScale = new Vector3(transform.localScale.x * snakescaling, transform.localScale.y, transform.localScale.z);
+            transform.position = new Vector3(transform.position.x + snakepositioning, transform.position.y, transform.position.z);
+            yield return new WaitForSeconds(0.1f);
+        }
+
     }
 }
