@@ -260,7 +260,7 @@ MonoBehaviour:
   level: {fileID: 2958892049965026718, guid: ce2dba6686b994c498a9bb64bde44e01, type: 3}
   joiningText: {fileID: 2098045322}
   obstaclesToSpawn:
-  - {fileID: 5850359212014281754, guid: 61f7c301ba4546c41b4d90eb742f000f, type: 3}
+  - {fileID: 1273208941748387056, guid: 206e34f55d756eb479476c3b194218b5, type: 3}
   powerUp: {fileID: 4766169471047759267, guid: 82a7c02f69e77464ab9601a9948a7bed, type: 3}
 --- !u!1 &1004773578
 GameObject:
