@@ -185,7 +185,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1556574143401650347}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &1556574143436136808
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,6 +677,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9110803771036043509}
+  - component: {fileID: 6895940374540292493}
   m_Layer: 0
   m_Name: GameEssentials
   m_TagString: Untagged
@@ -703,3 +704,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &6895940374540292493
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4831515559709463376}
+  m_Enabled: 1
