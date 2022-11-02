@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float divingMoveSpeed = 2f;
     private float currentSpeed;
     private float gravity;
+    private Animator anim;
     private SpriteRenderer s;
     private bool grounded = false;
     [SerializeField] private Transform groundCheck;
@@ -31,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     private bool stunned;
     private float timeStunned = 0;
     private Coroutine flashingAnim = null;
+    [SerializeField] private RuntimeAnimatorController[] controllers;
     
 
     private void Awake()
@@ -38,17 +40,30 @@ public class PlayerMovement : MonoBehaviour
         rb = this.GetComponent<Rigidbody2D>();
         gravity = normalGravityMultiplier;
         currentSpeed = normalMoveSpeed;
+        anim = this.GetComponentInParent<Animator>();
         s = this.GetComponent<SpriteRenderer>();
     }
 
     public void OnMove(InputAction.CallbackContext ctx)
     {
         movementInput.x = ctx.ReadValue<Vector2>().x;
+        if (movementInput.x > 0)
+        {
+            anim.SetBool("FacingRight", true);
+            anim.SetBool("Moving", true);
+        }
+        else if (movementInput.x < 0)
+        {
+            anim.SetBool("FacingRight", false);
+            anim.SetBool("Moving", true);
+        } else
+        {
+            anim.SetBool("Moving", false);
+        }
     }
 
     public void OnGlide(InputAction.CallbackContext ctx)
     {
-        Debug.Log(ctx.action.triggered);
         if (ctx.action.triggered)
         {
             if (cr != null)
@@ -95,33 +110,38 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator ChangeState(PlayerState state)
     {
-        if (grounded || stunned)
+        if (grounded || stunned || inSap)
         {
             state = PlayerState.normal;
         }
         //set animator stuff
         currentState = state;
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         switch (state)
         {
             case PlayerState.diving:
+                transform.parent.Find("Dive").GetComponent<AudioSource>().Play();
+                transform.parent.Find("Glide").GetComponent<AudioSource>().Stop();
                 gravity = divingGravityMultiplier;
                 currentSpeed = divingMoveSpeed;
-                s.color = new Color(1, 0, 0);
+                anim.SetInteger("PlayerState", 2);
                 break;
             case PlayerState.gliding:
+                transform.parent.Find("StartGlide").GetComponent<AudioSource>().Play();
+                transform.parent.Find("Glide").GetComponent<AudioSource>().Play();
+                transform.parent.Find("Dive").GetComponent<AudioSource>().Stop();
                 gravity = glidingGravityMultiplier;
                 currentSpeed = glidingMoveSpeed;
-                s.color = new Color(0, 0, 1);
+                anim.SetInteger("PlayerState", 0);
                 break;
             case PlayerState.normal:
                 gravity = normalGravityMultiplier;
+                transform.parent.Find("Glide").GetComponent<AudioSource>().Stop();
+                transform.parent.Find("Dive").GetComponent<AudioSource>().Stop();
                 currentSpeed = normalMoveSpeed;
-                s.color = new Color(1, 1, 1);
-
+                anim.SetInteger("PlayerState", 1);
                 break;
         }
-        Debug.Log(state);
     }
 
     private void FixedUpdate()
@@ -159,6 +179,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         grounded = isGrounded;
+        if (grounded || inSap)
+        {
+            anim.SetBool("Grounded", true);
+        } else
+        {
+            anim.SetBool("Grounded", false);
+        }
         if (jumpPressed && grounded && !inSap && currentState == PlayerState.normal)
         {
             jumpPressed = false;
@@ -167,28 +194,98 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpPressed = false;
         }
+
+        CheckFootsteps();
+    }
+
+    private void CheckFootsteps()
+    {
+        AudioSource sfx1 = transform.parent.Find("SapWalk").GetComponent<AudioSource>();
+        AudioSource sfx2 = transform.parent.Find("Walk").GetComponent<AudioSource>();
+        if ((grounded || inSap) && anim.GetBool("Moving"))
+        {
+            if(inSap)
+            {
+                if (!sfx1.isPlaying)
+                {
+                    sfx1.Play();
+                }
+                if (sfx2.isPlaying)
+                {
+                    sfx2.Stop();
+                }
+            }
+            else
+            {
+                if (!sfx2.isPlaying)
+                {
+                    sfx2.Play();
+                }
+                if (sfx1.isPlaying)
+                {
+                    sfx1.Stop();
+                }
+
+            }
+        }
+        else
+        {
+            if(sfx1.isPlaying)
+            {
+                sfx1.Stop();
+            }
+            if (sfx2.isPlaying)
+            {
+                sfx2.Stop();
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         switch (collision.gameObject.layer)
         {
+            case 3:
+                if (currentState == PlayerState.diving)
+                {
+                    transform.parent.Find("HardHit").GetComponent<AudioSource>().Play();
+                }
+                else
+                {
+                    transform.parent.Find("LightHit").GetComponent<AudioSource>().Play();
+                }
+                break;
             case 6:
                 FindObjectOfType<GameManager>().CupCollected(playerNum);
+                anim.SetBool("Win", true);
+                transform.parent.Find("Victory").GetComponent<AudioSource>().Play();
                 break;
             case 8:
                 inSap = true;
+                transform.parent.Find("SapSound").GetComponent<AudioSource>().Play();
                 break;
             case 9:
+                transform.parent.Find("SpikeHit").GetComponent<AudioSource>().Play();
                 timeStunned = 0;
                 rb.velocity = new Vector2(rb.velocity.x, 130);
+                anim.SetBool("Injured", true);
                 stunned = true;
-                if (flashingAnim == null)
+                if (flashingAnim != null)
+                {
+                    StopCoroutine(flashingAnim);
+                    flashingAnim = StartCoroutine(FlashingAnim());
+                } else
                 {
                     flashingAnim = StartCoroutine(FlashingAnim());
                 }
                 ChangeState(PlayerState.normal);
                 break;
+            case 10:
+                GameManager g = FindObjectOfType<GameManager>();
+                g.SpawnObstacle(this.playerNum - 1);
+                Destroy(collision.gameObject);
+                break;
+            
         }
     }
 
@@ -203,6 +300,8 @@ public class PlayerMovement : MonoBehaviour
     public void SetPlayerNum(int playerNum)
     {
         this.playerNum = playerNum;
+        anim = this.GetComponentInParent<Animator>();
+        this.anim.runtimeAnimatorController = controllers[playerNum - 1];
     }
 
     IEnumerator FlashingAnim()
@@ -220,5 +319,6 @@ public class PlayerMovement : MonoBehaviour
         }
         s.color = c1;
         stunned = false;
+        anim.SetBool("Injured", false);
     }
 }
