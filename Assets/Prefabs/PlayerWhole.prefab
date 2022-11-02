@@ -238,8 +238,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   controllers:
-  - {fileID: 9100000, guid: 5ca52c36611f74e459179c8cd25ec71e, type: 2}
   - {fileID: 9100000, guid: f6d8dcf69e2602a4cbc4166db20983b2, type: 2}
+  - {fileID: 9100000, guid: 5ca52c36611f74e459179c8cd25ec71e, type: 2}
 --- !u!1 &1233069122071354850
 GameObject:
   m_ObjectHideFlags: 0
