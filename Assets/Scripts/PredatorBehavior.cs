@@ -60,6 +60,7 @@ public class PredatorBehavior : MonoBehaviour
         {
             squirrelFound = true;
             Debug.Log("Detected squirrel");
+            
             switch (this.tag)
             {
                 case "Hawk":
