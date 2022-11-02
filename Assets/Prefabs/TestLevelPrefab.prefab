@@ -1298,8 +1298,9 @@ GameObject:
   - component: {fileID: 5376930061749691892}
   - component: {fileID: 3866352087332168396}
   - component: {fileID: 2391391174473402482}
+  - component: {fileID: 7648174470901809207}
   m_Layer: 6
-  m_Name: png-transparent-red-solo-cup-plastic-cup-party-solo-glass-lid-solo-thumbnail
+  m_Name: Cup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1398,6 +1399,26 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.8, y: 1.87}
   m_EdgeRadius: 0
+--- !u!95 &7648174470901809207
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2672608157696957287}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2796434106389330052
 GameObject:
   m_ObjectHideFlags: 0
@@ -3798,12 +3819,24 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.49
+      value: -2.21
       objectReference: {fileID: 0}
     - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -132.39001
+      value: -147.5
       objectReference: {fileID: 0}
     - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3836,6 +3869,10 @@ PrefabInstance:
     - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5608435344930807821, guid: 2200d997467bb334889f11e51e0caad7, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2200d997467bb334889f11e51e0caad7, type: 3}

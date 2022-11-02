@@ -237,6 +237,9 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 8
+  controllers:
+  - {fileID: 9100000, guid: 5ca52c36611f74e459179c8cd25ec71e, type: 2}
+  - {fileID: 9100000, guid: f6d8dcf69e2602a4cbc4166db20983b2, type: 2}
 --- !u!1 &1233069122071354850
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,7 +403,7 @@ Animator:
   m_GameObject: {fileID: 1233069122071354850}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f6d8dcf69e2602a4cbc4166db20983b2, type: 2}
+  m_Controller: {fileID: 9100000, guid: 5ca52c36611f74e459179c8cd25ec71e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
