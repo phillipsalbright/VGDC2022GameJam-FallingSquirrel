@@ -119,17 +119,24 @@ public class PlayerMovement : MonoBehaviour
         switch (state)
         {
             case PlayerState.diving:
+                transform.parent.Find("Dive").GetComponent<AudioSource>().Play();
+                transform.parent.Find("Glide").GetComponent<AudioSource>().Stop();
                 gravity = divingGravityMultiplier;
                 currentSpeed = divingMoveSpeed;
                 anim.SetInteger("PlayerState", 2);
                 break;
             case PlayerState.gliding:
+                transform.parent.Find("StartGlide").GetComponent<AudioSource>().Play();
+                transform.parent.Find("Glide").GetComponent<AudioSource>().Play();
+                transform.parent.Find("Dive").GetComponent<AudioSource>().Stop();
                 gravity = glidingGravityMultiplier;
                 currentSpeed = glidingMoveSpeed;
                 anim.SetInteger("PlayerState", 0);
                 break;
             case PlayerState.normal:
                 gravity = normalGravityMultiplier;
+                transform.parent.Find("Glide").GetComponent<AudioSource>().Stop();
+                transform.parent.Find("Dive").GetComponent<AudioSource>().Stop();
                 currentSpeed = normalMoveSpeed;
                 anim.SetInteger("PlayerState", 1);
                 break;
@@ -186,20 +193,85 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpPressed = false;
         }
+        if (rb.velocity.x > 0.01)
+        {
+            anim.SetBool("FacingRight", true);
+        } else if (rb.velocity.x < -0.01)
+        {
+            anim.SetBool("FacingRight", false);
+        }
+
+        CheckFootsteps();
+    }
+
+    private void CheckFootsteps()
+    {
+        AudioSource sfx1 = transform.parent.Find("SapWalk").GetComponent<AudioSource>();
+        AudioSource sfx2 = transform.parent.Find("Walk").GetComponent<AudioSource>();
+        if (grounded)
+        {
+            if(inSap)
+            {
+                if (!sfx1.isPlaying)
+                {
+                    sfx1.Play();
+                }
+                if (sfx2.isPlaying)
+                {
+                    sfx2.Stop();
+                }
+            }
+            else
+            {
+                if (!sfx2.isPlaying)
+                {
+                    sfx2.Play();
+                }
+                if (sfx1.isPlaying)
+                {
+                    sfx1.Stop();
+                }
+
+            }
+        }
+        else
+        {
+            if(sfx1.isPlaying)
+            {
+                sfx1.Stop();
+            }
+            if (sfx2.isPlaying)
+            {
+                sfx2.Stop();
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         switch (collision.gameObject.layer)
         {
+            case 3:
+                if (currentState == PlayerState.diving)
+                {
+                    transform.parent.Find("HardHit").GetComponent<AudioSource>().Play();
+                }
+                else
+                {
+                    transform.parent.Find("LightHit").GetComponent<AudioSource>().Play();
+                }
+                break;
             case 6:
                 FindObjectOfType<GameManager>().CupCollected(playerNum);
                 //play winning anim
+                transform.parent.Find("Victory").GetComponent<AudioSource>().Play();
                 break;
             case 8:
                 inSap = true;
+                transform.parent.Find("SapSound").GetComponent<AudioSource>().Play();
                 break;
             case 9:
+                transform.parent.Find("SpikeHit").GetComponent<AudioSource>().Play();
                 timeStunned = 0;
                 rb.velocity = new Vector2(rb.velocity.x, 130);
                 anim.SetBool("Injured", true);
@@ -215,6 +287,7 @@ public class PlayerMovement : MonoBehaviour
                 g.SpawnObstacle(this.playerNum);
                 Destroy(collision.gameObject);
                 break;
+            
         }
     }
 
