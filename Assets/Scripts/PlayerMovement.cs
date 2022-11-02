@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     private bool stunned;
     private float timeStunned = 0;
     private Coroutine flashingAnim = null;
+    [SerializeField] private RuntimeAnimatorController[] controllers;
     
 
     private void Awake()
@@ -46,6 +47,19 @@ public class PlayerMovement : MonoBehaviour
     public void OnMove(InputAction.CallbackContext ctx)
     {
         movementInput.x = ctx.ReadValue<Vector2>().x;
+        if (movementInput.x > 0)
+        {
+            anim.SetBool("FacingRight", true);
+            anim.SetBool("Moving", true);
+        }
+        else if (movementInput.x < 0)
+        {
+            anim.SetBool("FacingRight", false);
+            anim.SetBool("Moving", true);
+        } else
+        {
+            anim.SetBool("Moving", false);
+        }
     }
 
     public void OnGlide(InputAction.CallbackContext ctx)
@@ -165,6 +179,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         grounded = isGrounded;
+        if (grounded || inSap)
+        {
+            anim.SetBool("Grounded", true);
+        } else
+        {
+            anim.SetBool("Grounded", false);
+        }
         if (jumpPressed && grounded && !inSap && currentState == PlayerState.normal)
         {
             jumpPressed = false;
@@ -172,13 +193,6 @@ public class PlayerMovement : MonoBehaviour
         } else if (jumpPressed)
         {
             jumpPressed = false;
-        }
-        if (rb.velocity.x > 0.01)
-        {
-            anim.SetBool("FacingRight", true);
-        } else if (rb.velocity.x < -0.01)
-        {
-            anim.SetBool("FacingRight", false);
         }
 
         CheckFootsteps();
@@ -282,6 +296,8 @@ public class PlayerMovement : MonoBehaviour
     public void SetPlayerNum(int playerNum)
     {
         this.playerNum = playerNum;
+        anim = this.GetComponentInParent<Animator>();
+        this.anim.runtimeAnimatorController = controllers[playerNum - 1];
     }
 
     IEnumerator FlashingAnim()
