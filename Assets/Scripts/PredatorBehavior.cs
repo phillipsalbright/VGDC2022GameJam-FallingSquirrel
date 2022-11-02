@@ -29,9 +29,9 @@ public class PredatorBehavior : MonoBehaviour
         float mindist = 10000;
         for (int i = 0; i < players.Length; i++)
         {
-            if (Mathf.Abs(this.transform.position.y - players[i].transform.position.y) < mindist)
+            if (Mathf.Abs(this.transform.position.x - players[i].transform.position.x) < mindist)
             {
-                mindist = Mathf.Abs(this.transform.position.y - players[i].transform.position.y);
+                mindist = Mathf.Abs(this.transform.position.x - players[i].transform.position.x);
                 minIndex = i;
             }
         }
@@ -55,6 +55,21 @@ public class PredatorBehavior : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (player == null)
+        {
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            int minIndex = 0;
+            float mindist = 10000;
+            for (int i = 0; i < players.Length; i++)
+            {
+                if (Mathf.Abs(this.transform.position.x - players[i].transform.position.x) < mindist)
+                {
+                    mindist = Mathf.Abs(this.transform.position.x - players[i].transform.position.x);
+                    minIndex = i;
+                }
+            }
+            player = players[minIndex];
+        }
         checkForSquirrel();
         rb.velocity = velocity;
     }
@@ -77,7 +92,7 @@ public class PredatorBehavior : MonoBehaviour
 
     private void checkForSquirrel()
     {
-        if (transform.position.y >= player.transform.position.y && !squirrelFound)
+        if (transform.position.y >= player.transform.position.y - 1 && !squirrelFound)
         {
             squirrelFound = true;
             Debug.Log("Detected squirrel");

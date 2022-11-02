@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     private bool gameOver = false;
     [SerializeField] private GameObject[] obstaclesToSpawn;
     [SerializeField] private GameObject powerUp;
+    private List<GameObject> Levels = new List<GameObject>();
 
 
     private void Awake()
@@ -49,8 +50,8 @@ public class GameManager : MonoBehaviour
                 float distance = 0;
                 for (int i = 0; i < players.Count; i++)
                 {
-                    Instantiate(level, levelLocation.position + new Vector3(distance, 0, 0), Quaternion.identity);
                     players[i].transform.position = new Vector3(distance, 0, 0);
+                    Levels.Add(Instantiate(level, levelLocation.position + new Vector3(distance, 0, 0), Quaternion.identity));
                     players[i].GetComponent<PlayerInput>().ActivateInput();
                     distance += distanceBetweenLevels;
                 }
@@ -76,12 +77,18 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape) && Time.timeScale == 0)
         {
             int currentPlayers = players.Count;
-            for (int i = 0; i < players.Count; i++)
+            for (int i = 0; i < currentPlayers; i++)
             {
                 Destroy(players[i]);
             }
             players.Clear();
             players = new List<GameObject>();
+            int currentLevels = Levels.Count;
+            for (int i = 0; i < currentLevels; i++)
+            {
+                Destroy(Levels[i]);
+            }
+            Levels = new List<GameObject>();
             pm.DisableJoining();
             GameObject p = pm.playerPrefab;
             pm = null;
@@ -99,8 +106,8 @@ public class GameManager : MonoBehaviour
             float distance = 0;
             for (int i = 0; i < players.Count; i++)
             {
-                Instantiate(level, levelLocation.position + new Vector3(distance, 0, 0), Quaternion.identity);
                 players[i].transform.position = new Vector3(distance, 0, 0);
+                Instantiate(level, levelLocation.position + new Vector3(distance, 0, 0), Quaternion.identity);
                 players[i].GetComponent<PlayerInput>().ActivateInput();
                 distance += distanceBetweenLevels;
             }
