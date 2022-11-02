@@ -181,6 +181,7 @@ public class PlayerMovement : MonoBehaviour
         {
             case 6:
                 FindObjectOfType<GameManager>().CupCollected(playerNum);
+                //play winning anim
                 break;
             case 8:
                 inSap = true;

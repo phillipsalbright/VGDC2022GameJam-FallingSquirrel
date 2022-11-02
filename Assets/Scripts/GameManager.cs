@@ -73,13 +73,18 @@ public class GameManager : MonoBehaviour
             gameOver = true;
             gameCam.gameObject.SetActive(true);
             joiningText.SetText("Player " + playerNum + " wins!");
+            GameObject[] cups = GameObject.FindGameObjectsWithTag("cup");
+            for (int i = 0; i < cups.Length; i++)
+            {
+                Destroy(cups[i]);
+            }
             StartCoroutine(GameOver());
         }
     }
 
     IEnumerator GameOver()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(5f);
         SceneManager.LoadScene(0);
     }
 
