@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        joiningText.text = "Press a button on player 1's device";
+        joiningText.text = "Press a button on player 1's device\nor\nPress escape to play two player using one keyboard";
         StartCoroutine(DelayedStart());
     }
 
@@ -35,14 +35,66 @@ public class GameManager : MonoBehaviour
     }
     public void OnPlayerJoined(PlayerInput player)
     {
-        player.DeactivateInput();
-        players.Add(player.gameObject);
-        player.gameObject.GetComponentInChildren<PlayerMovement>().SetPlayerNum(players.Count);
-        joiningText.text = "Press a button on player " + (players.Count + 1) + "'s device";
-        if (players.Count >= numPlayers)
+        if (pm != null)
         {
+            player.DeactivateInput();
+            players.Add(player.gameObject);
+            player.gameObject.GetComponentInChildren<PlayerMovement>().SetPlayerNum(players.Count);
+            joiningText.text = "Press a button on player " + (players.Count + 1) + "'s device\nor\nPress escape to play two player using one keyboard";
+            if (players.Count >= numPlayers)
+            {
+                pm.DisableJoining();
+                //Game start
+                gameCam.gameObject.SetActive(false);
+                float distance = 0;
+                for (int i = 0; i < players.Count; i++)
+                {
+                    Instantiate(level, levelLocation.position + new Vector3(distance, 0, 0), Quaternion.identity);
+                    players[i].transform.position = new Vector3(distance, 0, 0);
+                    players[i].GetComponent<PlayerInput>().ActivateInput();
+                    distance += distanceBetweenLevels;
+                }
+                Time.timeScale = 1;
+                if (numPlayers > 1)
+                {
+                    for (int i = 0; i < numPlayers; i++)
+                    {
+                        StartCoroutine(PowerupSpawner(i));
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && Time.timeScale == 0)
+        {
+            int currentPlayers = players.Count;
+            for (int i = 0; i < players.Count; i++)
+            {
+                Destroy(players[i]);
+            }
+            players.Clear();
+            players = new List<GameObject>();
             pm.DisableJoining();
-            //Game start
+            GameObject p = pm.playerPrefab;
+            pm = null;
+            GameObject p1 = Instantiate(p);
+            //p.GetComponent<PlayerInput>().defaultActionMap = "Player2Keyboard";
+            GameObject p2 = Instantiate(p);
+            p2.GetComponent<PlayerInput>().SwitchCurrentActionMap("Player2Keyboard");
+            Debug.Log(players.Count);
+            players.Add(p1);
+            Debug.Log(players.Count);
+            p1.gameObject.GetComponentInChildren<PlayerMovement>().SetPlayerNum(players.Count);
+            players.Add(p2);
+            p2.gameObject.GetComponentInChildren<PlayerMovement>().SetPlayerNum(players.Count);
             gameCam.gameObject.SetActive(false);
             float distance = 0;
             for (int i = 0; i < players.Count; i++)
@@ -52,6 +104,7 @@ public class GameManager : MonoBehaviour
                 players[i].GetComponent<PlayerInput>().ActivateInput();
                 distance += distanceBetweenLevels;
             }
+          //  players[1].GetComponent<PlayerInput>().SwitchCurrentActionMap("Player2Keyboard");
             Time.timeScale = 1;
             if (numPlayers > 1)
             {
@@ -61,9 +114,7 @@ public class GameManager : MonoBehaviour
                 }
 
             }
-            
         }
-
     }
 
     public void CupCollected(int playerNum)

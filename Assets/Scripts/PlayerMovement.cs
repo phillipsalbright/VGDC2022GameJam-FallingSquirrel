@@ -302,6 +302,7 @@ public class PlayerMovement : MonoBehaviour
         this.playerNum = playerNum;
         anim = this.GetComponentInParent<Animator>();
         this.anim.runtimeAnimatorController = controllers[playerNum - 1];
+        Debug.Log(playerNum);
     }
 
     IEnumerator FlashingAnim()
