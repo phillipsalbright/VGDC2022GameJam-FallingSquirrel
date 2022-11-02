@@ -17,11 +17,25 @@ public class PredatorBehavior : MonoBehaviour
     [SerializeField] private float snakescaling = 1.2f;
 
     [SerializeField] private float snakepositioning = 0.3f;
+    private Animator anim;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = this.GetComponent<Rigidbody2D>();
+        anim = this.GetComponent<Animator>();
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        int minIndex = 0;
+        float mindist = 10000;
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (Mathf.Abs(this.transform.position.y - players[i].transform.position.y) < mindist)
+            {
+                mindist = Mathf.Abs(this.transform.position.y - players[i].transform.position.y);
+                minIndex = i;
+            }
+        }
+        player = players[minIndex];
         switch (this.tag)
         {
             case "Default":
@@ -50,6 +64,13 @@ public class PredatorBehavior : MonoBehaviour
         if (collision.gameObject.layer == 3)
         {
             velocity.x *= -1;
+            if (velocity.x < 0)
+            {
+                anim.SetBool("FacingRight", false);
+            } else
+            {
+                anim.SetBool("FacingRight", true);
+            }
             rb.velocity = velocity;
         }
     }
@@ -65,6 +86,9 @@ public class PredatorBehavior : MonoBehaviour
             {
                 case "Hawk":
                     velocity += new Vector2(speed, -speed);
+                    this.GetComponent<AudioSource>().Play();
+                    anim.SetBool("Fly", true);
+                    anim.SetBool("FacingRight", true);
                     break;
                 case "Snake":
                     rb.mass *= 5;
