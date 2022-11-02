@@ -257,7 +257,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
             case 6:
                 FindObjectOfType<GameManager>().CupCollected(playerNum);
-                //play winning anim
+                anim.SetBool("Win", true);
                 transform.parent.Find("Victory").GetComponent<AudioSource>().Play();
                 break;
             case 8:

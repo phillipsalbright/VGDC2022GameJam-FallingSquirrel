@@ -71,19 +71,20 @@ public class GameManager : MonoBehaviour
         if (!gameOver)
         {
             gameOver = true;
-            gameCam.gameObject.SetActive(true);
-            joiningText.SetText("Player " + playerNum + " wins!");
             GameObject[] cups = GameObject.FindGameObjectsWithTag("cup");
             for (int i = 0; i < cups.Length; i++)
             {
                 Destroy(cups[i]);
             }
-            StartCoroutine(GameOver());
+            StartCoroutine(GameOver(playerNum));
         }
     }
 
-    IEnumerator GameOver()
+    IEnumerator GameOver(int playerNum)
     {
+        yield return new WaitForSeconds(5f);
+        gameCam.gameObject.SetActive(true);
+        joiningText.SetText("Player " + playerNum + " wins!");
         yield return new WaitForSeconds(5f);
         SceneManager.LoadScene(0);
     }
@@ -130,7 +131,7 @@ public class GameManager : MonoBehaviour
         {
             otherIndex--;
         }
-        else
+        else if (otherIndex == playerIndex && otherIndex < numPlayers - 1)
         {
             otherIndex++;
         }
