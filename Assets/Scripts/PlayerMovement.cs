@@ -110,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator ChangeState(PlayerState state)
     {
-        if (grounded || stunned)
+        if (grounded || stunned || inSap)
         {
             state = PlayerState.normal;
         }
@@ -202,7 +202,7 @@ public class PlayerMovement : MonoBehaviour
     {
         AudioSource sfx1 = transform.parent.Find("SapWalk").GetComponent<AudioSource>();
         AudioSource sfx2 = transform.parent.Find("Walk").GetComponent<AudioSource>();
-        if (grounded)
+        if ((grounded || inSap) && anim.GetBool("Moving"))
         {
             if(inSap)
             {
@@ -270,7 +270,11 @@ public class PlayerMovement : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, 130);
                 anim.SetBool("Injured", true);
                 stunned = true;
-                if (flashingAnim == null)
+                if (flashingAnim != null)
+                {
+                    StopCoroutine(flashingAnim);
+                    flashingAnim = StartCoroutine(FlashingAnim());
+                } else
                 {
                     flashingAnim = StartCoroutine(FlashingAnim());
                 }
@@ -278,7 +282,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
             case 10:
                 GameManager g = FindObjectOfType<GameManager>();
-                g.SpawnObstacle(this.playerNum);
+                g.SpawnObstacle(this.playerNum - 1);
                 Destroy(collision.gameObject);
                 break;
             

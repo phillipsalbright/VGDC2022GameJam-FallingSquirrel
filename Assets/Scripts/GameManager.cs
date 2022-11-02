@@ -94,7 +94,6 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(4f);
         while (true)
         {
-            Debug.Log("starting");
             yield return new WaitForSeconds(Random.Range(5, 9));
             float AverageOtherPlayers = 0;
             for (int i = 0; i < numPlayers; i++)
@@ -117,8 +116,7 @@ public class GameManager : MonoBehaviour
             float randomNum = Random.Range(0, 2);
             if (randomNum < probability)
             {
-                Debug.Log("spawning powerup");
-                float xrange = Random.Range(players[playerIndex].transform.position.x - 5, players[playerIndex].transform.position.x + 5);
+                float xrange = Random.Range(players[playerIndex].transform.position.x - 3, players[playerIndex].transform.position.x + 3);
                 Instantiate(powerUp, new Vector3(xrange, players[playerIndex].GetComponentInChildren<PlayerMovement>().transform.position.y - 20), Quaternion.identity);
             }
         }
@@ -135,9 +133,9 @@ public class GameManager : MonoBehaviour
         {
             otherIndex++;
         }
-        Debug.Log("spawning obstacle" + playerIndex + " " + otherIndex);
+      //  Debug.Log("spawning obstacle" + playerIndex + " " + otherIndex);
         int obstacleToSpawn = Random.Range(0, obstaclesToSpawn.Length);
-        float xloc = players[otherIndex].transform.position.x + Random.Range(-5, 5);
+        float xloc = players[otherIndex].transform.position.x + Random.Range(-3, 3);
         Instantiate(obstaclesToSpawn[obstacleToSpawn], new Vector3(xloc, players[otherIndex].GetComponentInChildren<PlayerMovement>().transform.position.y - 20), Quaternion.identity);
     }
 }
