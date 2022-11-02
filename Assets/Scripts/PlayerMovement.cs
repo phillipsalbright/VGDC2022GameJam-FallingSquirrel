@@ -46,6 +46,19 @@ public class PlayerMovement : MonoBehaviour
     public void OnMove(InputAction.CallbackContext ctx)
     {
         movementInput.x = ctx.ReadValue<Vector2>().x;
+        if (movementInput.x > 0)
+        {
+            anim.SetBool("FacingRight", true);
+            anim.SetBool("Moving", true);
+        }
+        else if (movementInput.x < 0)
+        {
+            anim.SetBool("FacingRight", false);
+            anim.SetBool("Moving", true);
+        } else
+        {
+            anim.SetBool("Moving", false);
+        }
     }
 
     public void OnGlide(InputAction.CallbackContext ctx)
@@ -158,6 +171,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         grounded = isGrounded;
+        if (grounded)
+        {
+            anim.SetBool("Grounded", true);
+        } else
+        {
+            anim.SetBool("Grounded", false);
+        }
         if (jumpPressed && grounded && !inSap && currentState == PlayerState.normal)
         {
             jumpPressed = false;
@@ -165,13 +185,6 @@ public class PlayerMovement : MonoBehaviour
         } else if (jumpPressed)
         {
             jumpPressed = false;
-        }
-        if (rb.velocity.x > 0.01)
-        {
-            anim.SetBool("FacingRight", true);
-        } else if (rb.velocity.x < -0.01)
-        {
-            anim.SetBool("FacingRight", false);
         }
     }
 
