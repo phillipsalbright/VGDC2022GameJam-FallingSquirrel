@@ -17,6 +17,7 @@ public class PredatorBehavior : MonoBehaviour
     [SerializeField] private float snakescaling = 1.2f;
 
     [SerializeField] private float snakepositioning = 0.3f;
+    private GameObject hitbox;
     private Animator anim;
 
     // Start is called before the first frame update
@@ -44,6 +45,7 @@ public class PredatorBehavior : MonoBehaviour
                 break;
             case "Snake":
                 velocity = Vector2.zero;
+                hitbox = this.GetComponentInChildren<BoxCollider2D>().gameObject;
                 break;
             case "Hawk":
                 velocity = Vector2.zero;
@@ -92,39 +94,55 @@ public class PredatorBehavior : MonoBehaviour
 
     private void checkForSquirrel()
     {
-        if (transform.position.y >= player.transform.position.y - 1 && !squirrelFound)
+        switch (this.tag)
         {
-            squirrelFound = true;
-            Debug.Log("Detected squirrel");
-            
-            switch (this.tag)
-            {
-                case "Hawk":
+            case "Hawk":
+                if (transform.position.y >= player.transform.position.y - 1 && !squirrelFound)
+                {
+                    squirrelFound = true;
+                    Debug.Log("Detected squirrel");
                     velocity += new Vector2(speed, -speed);
                     this.GetComponent<AudioSource>().Play();
                     anim.SetBool("Fly", true);
                     anim.SetBool("FacingRight", true);
                     break;
-                case "Snake":
+
+                }
+                break;
+            case "Snake":
+                if (transform.position.y >= player.transform.position.y - 3.5f && !squirrelFound)
+                {
+                    squirrelFound = true;
+                    Debug.Log("Detected squirrel");
                     rb.mass *= 5;
                     rb.drag *= 5;
                     //transform.localScale = new Vector3(transform.localScale.x * 5, transform.localScale.y, transform.localScale.z);
                     StartCoroutine(ScaleSnake());
+                    this.GetComponent<Animator>().Play("SnakeAttack");
                     //transform.position = new Vector3(transform.position.x - 2f, transform.position.y, transform.position.z);
-                    break;
-            }
 
+                }
+                break;
         }
     }
 
     IEnumerator ScaleSnake()
     {
+        this.GetComponent<AudioSource>().Play();
         for (int i = 0; i < 10; i++)
         {
-            transform.localScale = new Vector3(transform.localScale.x * snakescaling, transform.localScale.y, transform.localScale.z);
-            transform.position = new Vector3(transform.position.x + snakepositioning, transform.position.y, transform.position.z);
-            yield return new WaitForSeconds(0.1f);
+            Debug.Log("Frogs");
+            hitbox.transform.localScale = new Vector3(hitbox.transform.localScale.x * snakescaling, hitbox.transform.localScale.y, hitbox.transform.localScale.z);
+            hitbox.transform.position = new Vector3(hitbox.transform.position.x + snakepositioning, hitbox.transform.position.y, hitbox.transform.position.z);
+            yield return new WaitForSeconds(0.06f);
         }
+        yield return new WaitForSeconds(.12f);
+        this.GetComponent<Animator>().Play("SnakeIdle");
+        hitbox.transform.localScale = new Vector3(hitbox.transform.localScale.x / (Mathf.Pow(snakescaling, 10)), hitbox.transform.localScale.y, hitbox.transform.localScale.z);
+        hitbox.transform.position = new Vector3(hitbox.transform.position.x - snakepositioning * 10, hitbox.transform.position.y, hitbox.transform.position.z);
+        yield return new WaitForSeconds(2.3f);
+        this.GetComponent<AudioSource>().volume = 0;
+        squirrelFound = false;
 
     }
 }
